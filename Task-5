@@ -1,0 +1,120 @@
+import java.util.*;
+
+class Course {
+    String code;
+    String title;
+    String description;
+    int capacity;
+    int schedule;
+    int availableSlots;
+
+    Course(String code, String title, String description, int capacity, int schedule, int availableSlots) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.capacity = capacity;
+        this.schedule = schedule;
+        this.availableSlots = availableSlots;
+    }
+}
+
+class Student {
+    String id;
+    String name;
+    ArrayList<String> registeredCourses;
+
+    Student(String id, String name) {
+        this.name = name;
+        this.id = id;
+        this.registeredCourses = new ArrayList<>();
+    }
+}
+
+public class StudentRegistrationSystem {
+    Map<String, Course> courseDatabase = new HashMap<>();
+    Map<String, Student> studentDatabase = new HashMap<>();
+    Scanner sc = new Scanner(System.in);
+
+    void addCourse(String code, String title, String description, int capacity, int schedule, int availableSlots) {
+        Course course = new Course(code, title, description, capacity, schedule, availableSlots);
+        courseDatabase.put(code, course);
+    }
+
+    void addStudent(String id, String name) {
+        Student student = new Student(id, name);
+        studentDatabase.put(id, student);
+    }
+
+    void displayCourseList() {
+        System.out.println("Available courses are:");
+        for (Course course : courseDatabase.values()) {
+            System.out.println("Code: " + course.code + ", Title: " + course.title + ", Available slots: " + course.availableSlots);
+        }
+    }
+
+    void registerStudentForCourse(String studentId, String courseCode) {
+        Student student = studentDatabase.get(studentId);
+        Course course = courseDatabase.get(courseCode);
+        if (course.availableSlots > 0) {
+            student.registeredCourses.add(courseCode);
+            course.availableSlots--;
+            System.out.println("Student " + studentId + " is registered for Course: " + courseCode);
+        } else {
+            System.out.println("Course " + courseCode + ", Slots are full");
+        }
+    }
+
+    void removeStudentFromCourse(String studentId, String courseCode) {
+        Student student = studentDatabase.get(studentId);
+        Course course = courseDatabase.get(courseCode);
+        if (student.registeredCourses.contains(courseCode)) {
+            student.registeredCourses.remove(courseCode);
+            course.availableSlots++;
+            System.out.println("Student " + studentId + " dropped course: " + courseCode);
+        } else {
+            System.out.println("Student " + studentId + " is not registered for course: " + courseCode);
+        }
+    }
+
+    public static void main(String[] args) {
+        StudentRegistrationSystem system = new StudentRegistrationSystem();
+        system.addCourse("CS101", "Introduction to Computer Science", "Learn the basics of computer science", 30, 2, 30);
+        system.addCourse("MATH102", "Calculus", "Learn calculus", 25, 3, 25);
+        system.addCourse("ENGL103", "English Composition", "Learn to write effectively", 20, 1, 20);
+        system.addStudent("S1", "Jhon Steves");
+        system.addStudent("S2", "Jack Roy");
+        Scanner sc=new Scanner(System.in);
+        while (true) {
+            System.out.println("1. Display course List");
+            System.out.println("2. Register for Course");
+            System.out.println("3. Dropping Course");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    system.displayCourseList();
+                    break;
+                case 2:
+                    System.out.print("Enter student ID: ");
+                    String studentId = sc.next();
+                    System.out.print("Enter course ID: ");
+                    String courseId = sc.next();
+                    system.registerStudentForCourse(studentId, courseId);
+                    break;
+                case 3:
+                    System.out.print("Enter student ID: ");
+                    studentId = sc.next();
+                    System.out.print("Enter course ID: ");
+                    courseId = sc.next();
+                    system.removeStudentFromCourse(studentId, courseId);
+                    break;
+                case 4:
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
+    }
+}
